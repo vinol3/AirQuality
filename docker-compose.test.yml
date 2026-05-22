@@ -1,0 +1,27 @@
+version: "3.9"
+
+# ─── TEST ENVIRONMENT ────────────────────────────────────────────────────────
+# Usage: docker compose -f docker-compose.test.yml up --abort-on-container-exit
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: .env.test
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "
+        pytest tests/ -v --tb=short --cov=app --cov-report=term-missing
+      "
+
+  db:
+    image: postgres:15-alpine
+    env_file: .env.test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airpulse"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
