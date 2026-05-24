@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AirPulse — City Rankings</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <span class="logo">🌬️ AirPulse</span>
+  <a href="index.html">Dashboard</a>
+  <a href="rankings.html" class="active">Rankings</a>
+  <a href="/docs" target="_blank">API Docs</a>
+</nav>
+
+<div class="container">
+  <h1 class="page-title">City Air Quality Rankings</h1>
+  <p style="color:var(--muted);margin-bottom:1.5rem;font-size:.9rem">
+    Ranked cleanest → most polluted by current AQI. Data refreshes every 30 minutes.
+  </p>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table id="rankings-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>City</th>
+            <th>Country</th>
+            <th>AQI</th>
+            <th>Category</th>
+            <th>24h Avg AQI</th>
+            <th>Detail</th>
+          </tr>
+        </thead>
+        <tbody id="rankings-body">
+          <tr><td colspan="7" class="loading">Loading rankings…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "/api/v1";
+
+async function loadRankings() {
+  try {
+    const resp = await fetch(`${API}/rankings/?limit=50`);
+    if (!resp.ok) throw new Error("API error " + resp.status);
+    const rankings = await resp.json();
+    renderTable(rankings);
+  } catch (err) {
+    document.getElementById("rankings-body").innerHTML =
+      `<tr><td colspan="7" class="error">Failed to load: ${err.message}</td></tr>`;
+  }
+}
+
+function renderTable(rankings) {
+  const tbody = document.getElementById("rankings-body");
+  if (!rankings.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">No data yet — ingestion running…</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rankings.map((r) => {
+    const aqi     = r.latest_aqi ?? "—";
+    const avg     = r.avg_aqi_24h !== null ? r.avg_aqi_24h.toFixed(1) : "—";
+    const color   = r.aqi_color;
+    return `
+      <tr>
+        <td style="font-weight:700">${r.rank}</td>
+        <td>${r.city.name}</td>
+        <td style="color:var(--muted)">${r.city.country}</td>
+        <td>
+          <span class="aqi-badge" style="background:${color}">${aqi}</span>
+        </td>
+        <td style="font-size:.85rem;color:var(--muted)">${r.aqi_category}</td>
+        <td style="color:var(--muted)">${avg}</td>
+        <td><a href="city.html?id=${r.city.id}">View →</a></td>
+      </tr>
+    `;
+  }).join("");
+}
+
+document.addEventListener("DOMContentLoaded", loadRankings);
+</script>
+</body>
+</html>
