@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AirQ </title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- AirPulse CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<nav>
+  <span class="logo">AirQ</span>
+  <a href="index.html" class="active">Dashboard</a>
+  <a href="rankings.html">Rankings</a>
+  <a href="/docs" target="_blank">API Docs</a>
+</nav>
+
+<div class="container">
+  <h1 class="page-title">Live Air Quality Map</h1>
+
+  <!-- Summary stats -->
+  <div class="stats-row">
+    <div class="card stat-card">
+      <div class="stat-label">Cities tracked</div>
+      <div class="stat-value" id="stat-cities">—</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Cleanest air</div>
+      <div class="stat-value" style="font-size:1.1rem" id="stat-best">—</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Most polluted</div>
+      <div class="stat-value" style="font-size:1.1rem" id="stat-worst">—</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Average AQI</div>
+      <div class="stat-value" id="stat-avg">—</div>
+    </div>
+    <div class="card stat-card">
+      <div class="stat-label">Last updated</div>
+      <div class="stat-value" style="font-size:1rem" id="stat-updated">—</div>
+    </div>
+  </div>
+
+  <!-- Map -->
+  <div id="map" class="mt-2"></div>
+
+  <!-- AQI legend -->
+  <div class="flex gap-1 mt-1" style="flex-wrap:wrap;margin-bottom:1.5rem">
+    <span style="font-size:.8rem;color:var(--muted);margin-right:.5rem;line-height:1.8">AQI:</span>
+    <span class="aqi-badge" style="background:#4caf50">0–50 Good</span>
+    <span class="aqi-badge" style="background:#ffeb3b">51–100 Moderate</span>
+    <span class="aqi-badge" style="background:#ff9800">101–150 Sensitive</span>
+    <span class="aqi-badge" style="background:#f44336;color:#fff">151–200 Unhealthy</span>
+    <span class="aqi-badge" style="background:#9c27b0;color:#fff">201–300 Very Unhealthy</span>
+    <span class="aqi-badge" style="background:#7b1fa2;color:#fff">301+ Hazardous</span>
+  </div>
+
+  <!-- Top 5 quick view -->
+  <div class="card mt-2">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h2 style="font-size:1rem;font-weight:600">Top 5 Cleanest Cities</h2>
+      <a href="rankings.html" style="font-size:.85rem;color:var(--accent)">Full rankings →</a>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>City</th><th>Country</th><th>AQI</th>
+          </tr>
+        </thead>
+        <tbody id="quick-rankings">
+          <tr><td colspan="4" class="loading">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- AirPulse JS -->
+<script src="js/map.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  // Initialise map before dashboard data loads
+  initMap("map");
+</script>
+</body>
+</html>
